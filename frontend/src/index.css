@@ -1,1 +1,90 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #f9f7f3;
+  --color-foreground: #202020;
+  
+  --color-card: #ffffff;
+  --color-card-foreground: #202020;
+  
+  --color-popover: #ffffff;
+  --color-popover-foreground: #202020;
+  
+  --color-primary: #ea2804;
+  --color-primary-foreground: #fcfcfc;
+  
+  --color-secondary: #f3f0e8;
+  --color-secondary-foreground: #202020;
+  
+  --color-muted: #e6e2d8;
+  --color-muted-foreground: #646464;
+  
+  --color-accent: #f3f0e8;
+  --color-accent-foreground: #202020;
+  
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  
+  --color-border: #e6e2d8;
+  --color-input: #e6e2d8;
+  --color-ring: rgba(59, 130, 246, 0.5);
+  
+  --color-brand-primary: #ea2804;
+  --color-brand-primary-hover: #c01f00;
+  --color-brand-glow: #ff6a3d;
+  --color-brand-pink: #f4a8a0;
+  --color-bg-app: #f9f7f3;
+  --color-bg-secondary: #f3f0e8;
+  --color-bg-dark: #202020;
+  
+  --color-status-success: #2b9a66;
+  --color-status-pending: #f59e0b;
+  --color-status-rejected: #ef4444;
+
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+}
+
+/* Custom styling for a warm editorial look */
+::selection {
+  background-color: var(--color-brand-pink);
+  color: var(--color-brand-primary);
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-input);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
