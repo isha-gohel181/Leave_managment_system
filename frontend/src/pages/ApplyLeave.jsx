@@ -74,32 +74,27 @@ export function ApplyLeave({
     }
 
     setIsSubmitting(true);
-
-    // Simulate submission loading
-    setTimeout(() => {
-      onAddRequest({
-        type: leaveType,
-        startDate,
-        endDate,
-        days: daysCount,
-        reason,
-        employeeName: userProfile.name,
-        employeeId: userProfile.id,
-        avatar: userProfile.avatar,
+    onAddRequest({
+      type: leaveType,
+      startDate,
+      endDate,
+      days: daysCount,
+      reason,
+      employeeName: userProfile.name,
+      employeeId: userProfile.id,
+      avatar: userProfile.avatar,
+    })
+      .then(() => {
+        setIsSubmitting(false);
+        setLeaveType("");
+        setStartDate("");
+        setEndDate("");
+        setReason("");
+        setActiveTab("history");
+      })
+      .catch(() => {
+        setIsSubmitting(false);
       });
-
-      toast.success("Leave Request Submitted Successfully");
-      setIsSubmitting(false);
-      
-      // Reset form
-      setLeaveType("");
-      setStartDate("");
-      setEndDate("");
-      setReason("");
-      
-      // Navigate back to history or dashboard
-      setActiveTab("history");
-    }, 1200);
   };
 
   const containerVariants = {

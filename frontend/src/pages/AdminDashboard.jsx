@@ -22,18 +22,50 @@ import {
   Pie, 
   Cell 
 } from "recharts";
-import { 
-  mockAdminStats, 
-  leaveOverviewData, 
-  leaveTypeDistribution 
-} from "@/lib/mockData";
-
 export function AdminDashboard({ leaveRequests, setActiveTab }) {
   // Recalculate stats dynamically based on leaveRequests state
   const pendingRequests = leaveRequests.filter(req => req.status === "pending").length;
   const approvedRequests = leaveRequests.filter(req => req.status === "approved").length;
   const rejectedRequests = leaveRequests.filter(req => req.status === "rejected").length;
   const totalRequests = leaveRequests.length;
+
+  // Dynamic Total Staff based on active requesters (fallback to placeholder if empty)
+  const totalEmployees = new Set(leaveRequests.map(req => req.employeeId).filter(Boolean)).size || 1;
+
+  // Dynamic Leave Type Distribution for Pie Chart
+  const typeCounts = {
+    'Annual Leave': 0,
+    'Sick Leave': 0,
+    'Casual Leave': 0
+  };
+  leaveRequests.forEach(req => {
+    if (typeCounts[req.type] !== undefined) {
+      typeCounts[req.type] += req.days;
+    }
+  });
+  const leaveTypeDistribution = [
+    { name: "Annual Leave", value: typeCounts['Annual Leave'] || 0, color: "#ea2804" },
+    { name: "Sick Leave", value: typeCounts['Sick Leave'] || 0, color: "#2b9a66" },
+    { name: "Casual Leave", value: typeCounts['Casual Leave'] || 0, color: "#f59e0b" }
+  ];
+
+  // Dynamic Monthly Leave overview for Bar Chart
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const leaveOverviewData = months.map(m => ({ month: m, applied: 0, approved: 0, rejected: 0 }));
+  
+  leaveRequests.forEach(req => {
+    if (!req.appliedDate) return;
+    const date = new Date(req.appliedDate);
+    const monthIndex = date.getMonth();
+    if (monthIndex >= 0 && monthIndex < 12) {
+      leaveOverviewData[monthIndex].applied += 1;
+      if (req.status === "approved") {
+        leaveOverviewData[monthIndex].approved += 1;
+      } else if (req.status === "rejected") {
+        leaveOverviewData[monthIndex].rejected += 1;
+      }
+    }
+  });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -108,7 +140,7 @@ export function AdminDashboard({ leaveRequests, setActiveTab }) {
               <Users className="w-4 h-4 text-text-muted shrink-0" />
             </div>
             <h3 className="text-3xl font-black text-text-primary font-display">
-              {mockAdminStats.totalEmployees}
+              {totalEmployees}
             </h3>
           </div>
           <p className="text-[10px] text-text-light font-mono mt-3 pt-2 border-t border-border/40">

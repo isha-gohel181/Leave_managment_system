@@ -61,7 +61,6 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
 
   const handleApprove = (id) => {
     onUpdateRequest(id, "approved");
-    toast.success("Leave Request Approved Successfully");
   };
 
   const handleRejectSubmit = (e) => {
@@ -71,7 +70,6 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
       return;
     }
     onUpdateRequest(rejectingRequest.id, "rejected", rejectionReason);
-    toast.success("Leave Request Rejected");
     setRejectingRequest(null);
     setRejectionReason("");
   };

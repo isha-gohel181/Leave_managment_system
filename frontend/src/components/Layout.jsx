@@ -23,7 +23,6 @@ import { mockNotifications } from "@/lib/mockData";
 export function Layout({ 
   children, 
   role, 
-  setRole, 
   activeTab, 
   setActiveTab,
   userProfile,
@@ -166,35 +165,6 @@ export function Layout({
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Quick Demo Role Switcher */}
-            <div className="hidden sm:flex items-center gap-1.5 bg-bg-secondary p-1 rounded-full border border-border">
-              <button
-                onClick={() => {
-                  setRole("employee");
-                  setActiveTab("dashboard");
-                }}
-                className={`px-3 py-1 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
-                  role === "employee"
-                    ? "bg-card text-text-primary shadow-sm font-semibold"
-                    : "text-text-muted hover:text-text-primary"
-                }`}
-              >
-                Employee View
-              </button>
-              <button
-                onClick={() => {
-                  setRole("admin");
-                  setActiveTab("admin-dashboard");
-                }}
-                className={`px-3 py-1 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
-                  role === "admin"
-                    ? "bg-card text-text-primary shadow-sm font-semibold"
-                    : "text-text-muted hover:text-text-primary"
-                }`}
-              >
-                Admin View
-              </button>
-            </div>
 
             {/* Notifications Bell */}
             <div className="relative">
@@ -336,33 +306,6 @@ export function Layout({
                   </button>
                 </div>
 
-                {/* Mobile Menu Role Switcher */}
-                <div className="flex bg-border/40 p-1 rounded-full border border-border/80">
-                  <button
-                    onClick={() => {
-                      setRole("employee");
-                      setActiveTab("dashboard");
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`flex-1 text-center py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
-                      role === "employee" ? "bg-card text-text-primary shadow-sm font-semibold" : "text-text-muted"
-                    }`}
-                  >
-                    Employee
-                  </button>
-                  <button
-                    onClick={() => {
-                      setRole("admin");
-                      setActiveTab("admin-dashboard");
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`flex-1 text-center py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
-                      role === "admin" ? "bg-card text-text-primary shadow-sm font-semibold" : "text-text-muted"
-                    }`}
-                  >
-                    Admin
-                  </button>
-                </div>
 
                 {/* Links */}
                 <nav className="space-y-1">

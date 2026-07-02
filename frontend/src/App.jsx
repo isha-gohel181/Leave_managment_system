@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import { Layout } from "@/components/Layout";
+import { Login } from "@/pages/Login";
 import { EmployeeDashboard } from "@/pages/EmployeeDashboard";
 import { ApplyLeave } from "@/pages/ApplyLeave";
 import { LeaveHistory } from "@/pages/LeaveHistory";
@@ -12,121 +13,133 @@ import {
   TableSkeleton, 
   FormSkeleton 
 } from "@/components/LoadingSkeleton";
-import { 
-  mockUsers, 
-  initialLeaveBalances, 
-  initialLeaveRequests 
-} from "@/lib/mockData";
+import { api, calculateLeaveBalances } from "@/lib/api";
 
 export default function App() {
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [role, setRole] = useState("employee"); // "employee" or "admin"
   const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, apply, history, manage, profile
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Shared state to allow reactive updates between apply, history and admin actions
-  const [leaveRequests, setLeaveRequests] = useState(initialLeaveRequests);
-  const [leaveBalances, setLeaveBalances] = useState(initialLeaveBalances);
+  // Shared state populated dynamically from the backend APIs
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [leaveBalances, setLeaveBalances] = useState([]);
 
-  const currentUser = role === "admin" ? mockUsers.admin : mockUsers.employee;
+  // Check auth state on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const savedToken = localStorage.getItem("token");
+      if (savedToken) {
+        try {
+          const response = await api.auth.getMe();
+          if (response.success && response.data) {
+            const currentUser = response.data;
+            setUser(currentUser);
+            setToken(savedToken);
+            setRole(currentUser.role);
+            setActiveTab(currentUser.role === "admin" ? "admin-dashboard" : "dashboard");
+          }
+        } catch (error) {
+          localStorage.removeItem("token");
+          toast.error("Session expired. Please sign in again.");
+        }
+      }
+      setIsCheckingAuth(false);
+    };
 
-  // Simulate loading states on tab transition to show off the skeleton UI
-  const handleSetActiveTab = (tab) => {
+    checkAuth();
+  }, []);
+
+  // Fetch data from backend APIs
+  const loadData = async (currentUser) => {
+    if (!currentUser) return;
     setIsLoading(true);
+    try {
+      if (currentUser.role === "admin") {
+        const reqResponse = await api.leaves.getAllRequests();
+        if (reqResponse.success) {
+          setLeaveRequests(reqResponse.data);
+        }
+      } else {
+        const reqResponse = await api.leaves.getMyRequests();
+        if (reqResponse.success) {
+          setLeaveRequests(reqResponse.data);
+          const computedBalances = calculateLeaveBalances(currentUser.rawBalances, reqResponse.data);
+          setLeaveBalances(computedBalances);
+        }
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to load leave data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Re-fetch data whenever user, active tab, or role changes
+  useEffect(() => {
+    if (user) {
+      loadData(user);
+    }
+  }, [user, activeTab, role]);
+
+  const handleLoginSuccess = (loggedInUser, userToken) => {
+    setUser(loggedInUser);
+    setToken(userToken);
+    setRole(loggedInUser.role);
+    setActiveTab(loggedInUser.role === "admin" ? "admin-dashboard" : "dashboard");
+  };
+
+  const handleSetActiveTab = (tab) => {
     setActiveTab(tab);
   };
 
-  useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 550);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
-
-  // Adjust active tab when changing roles to avoid landing on invalid tabs
-  const handleSetRole = (newRole) => {
-    setRole(newRole);
-    if (newRole === "admin") {
-      handleSetActiveTab("admin-dashboard");
-    } else {
-      handleSetActiveTab("dashboard");
-    }
-    toast.success(`Switched role to ${newRole === "admin" ? "HR Administrator" : "Aidan (Employee)"}`);
-  };
-
-  const handleAddRequest = (newReq) => {
-    const id = `LV-${Math.floor(1000 + Math.random() * 9000)}`;
-    const reqWithId = {
-      id,
-      ...newReq,
-      status: "pending",
-      appliedDate: new Date().toISOString().split("T")[0]
-    };
-    
-    // Prepend request
-    setLeaveRequests(prev => [reqWithId, ...prev]);
-
-    // Update balance: move available to pending
-    setLeaveBalances(prevBalances => 
-      prevBalances.map(bal => {
-        if (bal.type === newReq.type) {
-          return {
-            ...bal,
-            pending: bal.pending + newReq.days,
-            available: Math.max(0, bal.available - newReq.days)
-          };
-        }
-        return bal;
-      })
-    );
-  };
-
-  const handleUpdateRequest = (id, status, rejectionReason = "") => {
-    const req = leaveRequests.find(r => r.id === id);
-    if (!req) return;
-
-    // Update request status
-    setLeaveRequests(prevRequests => 
-      prevRequests.map(r => {
-        if (r.id === id) {
-          return {
-            ...r,
-            status,
-            reviewedBy: mockUsers.admin.name,
-            reviewedDate: new Date().toISOString().split("T")[0],
-            rejectionReason
-          };
-        }
-        return r;
-      })
-    );
-
-    // Update balances: clear pending and adjust available/used
-    setLeaveBalances(prevBalances => 
-      prevBalances.map(bal => {
-        if (bal.type === req.type) {
-          if (status === "approved") {
-            return {
-              ...bal,
-              pending: Math.max(0, bal.pending - req.days),
-              used: bal.used + req.days
-            };
-          } else if (status === "rejected") {
-            return {
-              ...bal,
-              pending: Math.max(0, bal.pending - req.days),
-              available: bal.available + req.days // restore available days
-            };
+  const handleAddRequest = async (newReq) => {
+    setIsLoading(true);
+    try {
+      const response = await api.leaves.apply(newReq);
+      if (response.success) {
+        toast.success("Leave request submitted successfully!");
+        // Refresh local data from server
+        if (user) {
+          const refreshedMe = await api.auth.getMe();
+          if (refreshedMe.success) {
+            setUser(refreshedMe.data);
           }
         }
-        return bal;
-      })
-    );
+        handleSetActiveTab("dashboard");
+      }
+    } catch (error) {
+      toast.error(error.message || "Could not submit leave request.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateRequest = async (id, status, rejectionReason = "") => {
+    setIsLoading(true);
+    try {
+      const response = await api.leaves.updateStatus(id, status, rejectionReason);
+      if (response.success) {
+        toast.success(`Leave request was ${status.toLowerCase()}!`);
+        // Refresh data
+        await loadData(user);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to update request status.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = () => {
-    toast.info("Mock system sign out triggered.");
+    api.auth.logout();
+    setUser(null);
+    setToken(null);
+    setLeaveRequests([]);
+    setLeaveBalances([]);
+    toast.success("Logged out successfully.");
   };
 
   // Render Page Content or Skeleton depending on loading state
@@ -160,7 +173,7 @@ export default function App() {
           <EmployeeDashboard
             leaveRequests={leaveRequests}
             leaveBalances={leaveBalances}
-            userProfile={currentUser}
+            userProfile={user}
             setActiveTab={handleSetActiveTab}
           />
         );
@@ -168,7 +181,7 @@ export default function App() {
         return (
           <ApplyLeave
             leaveBalances={leaveBalances}
-            userProfile={currentUser}
+            userProfile={user}
             onAddRequest={handleAddRequest}
             setActiveTab={handleSetActiveTab}
           />
@@ -177,7 +190,7 @@ export default function App() {
         return (
           <LeaveHistory
             leaveRequests={leaveRequests}
-            userProfile={currentUser}
+            userProfile={user}
           />
         );
       case "admin-dashboard":
@@ -197,7 +210,7 @@ export default function App() {
       case "profile":
         return (
           <Profile
-            userProfile={currentUser}
+            userProfile={user}
             role={role}
           />
         );
@@ -209,6 +222,30 @@ export default function App() {
         );
     }
   };
+
+  // Authenticating Loader
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-bg-app flex justify-center items-center">
+        <div className="space-y-4 text-center">
+          <div className="w-10 h-10 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-mono text-text-muted uppercase tracking-widest animate-pulse">
+            Verifying Identity Portal
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not Logged In screen
+  if (!user) {
+    return (
+      <>
+        <Toaster position="top-right" />
+        <Login onLoginSuccess={handleLoginSuccess} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -228,10 +265,9 @@ export default function App() {
       />
       <Layout
         role={role}
-        setRole={handleSetRole}
         activeTab={activeTab}
         setActiveTab={handleSetActiveTab}
-        userProfile={currentUser}
+        userProfile={user}
         onLogout={handleLogout}
       >
         {renderContent()}
@@ -239,3 +275,4 @@ export default function App() {
     </>
   );
 }
+
