@@ -47,6 +47,33 @@ Crave Leave is a modern, responsive, and feature-rich leave tracking portal buil
 
 ---
 
+## 📸 Screenshots
+
+### 🔑 Authentication
+| Registration Page | Login Page |
+| :---: | :---: |
+| ![Registration Page](screenshots/registration_page.png) | ![Login Page](screenshots/login_page.png) |
+
+### 👤 Employee Portal
+| Employee Dashboard | Apply for Leave |
+| :---: | :---: |
+| ![Employee Dashboard](screenshots/dahboard_employee.png) | ![Apply for Leave](screenshots/apply_leave.png) |
+
+| Leave History | Employee Profile |
+| :---: | :---: |
+| ![Leave History](screenshots/leave_history.png) | ![Employee Profile](screenshots/employee_profle.png) |
+
+### 👑 HR Admin Portal
+| Admin Dashboard | Manage Requests |
+| :---: | :---: |
+| ![Admin Dashboard](screenshots/admin_dashboard.png) | ![Manage Requests](screenshots/manage_request_admin.png) |
+
+| Admin Profile |
+| :---: |
+| ![Admin Profile](screenshots/profile_admin.png) |
+
+---
+
 ## 🏗️ System Architecture
 
 ```mermaid
