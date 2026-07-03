@@ -74,17 +74,13 @@ Crave Leave is a modern, responsive, and feature-rich leave tracking portal buil
 
 ---
 
+## 🏗️ System Architecture
 
-## 🤖 AI Tool Usage Report (Mandatory)
-
-This project was built in collaboration with **Antigravity by Google DeepMind** (an advanced AI pair programming agent). 
-
-### How AI was utilized:
-1. **Rebranding Strategy**: Automated the full branding conversion from a template codebase (renaming `replicate` references to `crave`), modifying `index.html` headers, crafting a custom inline geometric SVG "C" logo for the navigation pane, and updating public favicon resources.
-2. **Visual Asset Generation**: Used the AI's image generation capability to create `login_illustration.png` (a 3D-styled vector illustration showing user profile security) to fit the modern login layout.
-3. **UI Layout Refinement**: Fixed padding offsets, aligned vertical icon positions in search inputs, and rounded active filter tabs to make the component structure clean.
-4. **CSS Specificity Debugging**: Resolved a CSS variable specificity collision inside Tailwind CSS v4 where the base component's default `focus-visible` styles overrode custom border highlight classes. Overrode this globally via `--color-ring` in `index.css`.
-5. **Git Version Control**: Structured logical branch checkout merges from `frontend` into the `main` branch.
+```mermaid
+graph LR
+    Frontend[React + Vite (Frontend)] <-->|REST API + JWT Auth| Backend[Node + Express (Backend)]
+    Backend <--> Database[(MongoDB Database)]
+```
 
 ---
 
@@ -114,7 +110,7 @@ net start MongoDB
    ```env
    PORT=5000
    MONGO_URI=mongodb://127.0.0.1:27017/leave_management
-   JWT_SECRET=super_secret_token_123
+   JWT_SECRET=your_jwt_secret
    ```
 4. Start the backend server:
    ```bash
@@ -138,7 +134,53 @@ net start MongoDB
 
 ---
 
-## 📋 Assumptions & Specifications
-- **Leave Limits**: Employees are assigned standard balances upon registration (e.g. 15 days Annual Leave, 10 days Casual Leave, 5 days Sick Leave). Applying for leave deducts from the balance *upon approval* by an admin.
-- **Secure Token Storage**: Authentication tokens are stored in `localStorage` and sent inside the `Authorization: Bearer <token>` headers for backend API requests.
-- **Git History**: Project commits are logged using separate development branches (`frontend`, `backend`) before being cleanly merged into `main`.
+## 🤖 AI Usage Report
+
+AI tools were used as development assistants throughout the project to improve productivity, accelerate debugging, and refine the user experience.
+
+### AI-Assisted Tasks
+* **UI & UX Improvements**
+  - Improved layout structure and responsiveness.
+  - Refined spacing, alignment, and component hierarchy.
+  - Enhanced dashboard and authentication page design.
+* **Debugging & Problem Solving**
+  - Resolved Tailwind CSS styling conflicts.
+  - Fixed component rendering and state management issues.
+  - Assisted in troubleshooting API integration problems.
+* **Development Support**
+  - Suggested cleaner component organization.
+  - Helped optimize React and Express workflows.
+  - Assisted in implementing role-based authentication logic.
+* **Asset & Branding Support**
+  - Assisted in generating visual assets and branding elements.
+  - Helped create and refine the custom application identity.
+
+---
+
+## 📋 Assumptions
+- Every user is assigned a default leave balance during registration.
+- Leave balances are deducted only after approval.
+- One user can have either Employee or Admin role.
+- JWT tokens are stored in `localStorage`.
+- Authentication is handled using Bearer tokens.
+- MongoDB is used as the primary database.
+
+---
+
+## 🧩 Challenges Faced
+- Designing secure role-based access control.
+- Managing leave balances after approval workflows.
+- Maintaining synchronization between dashboards and leave history.
+- Creating a responsive UI across desktop and mobile devices.
+- Handling Tailwind CSS v4 styling conflicts and overrides.
+
+---
+
+## 🚀 Future Improvements
+- Email notifications
+- Calendar integration
+- Multi-level approval workflow
+- Team leave calendar
+- Analytics and reporting dashboard
+- Export leave reports to PDF/Excel
+- Role management system
