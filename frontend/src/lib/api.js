@@ -40,6 +40,20 @@ const request = async (endpoint, options = {}) => {
   }
 };
 
+// Helper to choose profile picture based on name & role
+const getUserAvatar = (name, role) => {
+  const isHR = role === 'Admin' || role === 'admin';
+  if (name && name.toLowerCase().includes('yash')) {
+    return "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200";
+  }
+  if (name && name.toLowerCase().includes('isha')) {
+    return "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200";
+  }
+  return isHR
+    ? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200"
+    : "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200";
+};
+
 // Helper to get initials or placeholder details for user UI
 const formatUser = (userData) => {
   if (!userData) return null;
@@ -49,9 +63,7 @@ const formatUser = (userData) => {
     name: userData.name,
     email: userData.email,
     role: userData.role ? userData.role.toLowerCase() : 'employee',
-    avatar: isHR
-      ? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200"
-      : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
+    avatar: getUserAvatar(userData.name, userData.role),
     department: isHR ? "Engineering Management" : "Engineering (Product)",
     manager: isHR ? "Board of Directors" : "Sarah Jenkins (Engineering Director)",
     joinDate: "Jan 12, 2024",
@@ -87,9 +99,7 @@ export const formatLeaveRequest = (req) => {
     employeeId: req.employee && typeof req.employee === 'object' ? req.employee._id : req.employee,
     employeeName: empName,
     employeeEmail: empEmail,
-    avatar: req.employee && typeof req.employee === 'object' && req.employee.role === 'Admin'
-      ? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200"
-      : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
+    avatar: getUserAvatar(empName, req.employee && typeof req.employee === 'object' ? req.employee.role : 'Employee'),
     type: typeMap[req.leaveType] || req.leaveType,
     startDate: start,
     endDate: end,
