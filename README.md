@@ -78,8 +78,8 @@ Crave Leave is a modern, responsive, and feature-rich leave tracking portal buil
 
 ```mermaid
 graph LR
-    Frontend[React + Vite (Frontend)] <-->|REST API + JWT Auth| Backend[Node + Express (Backend)]
-    Backend <--> Database[(MongoDB Database)]
+    Frontend["React + Vite (Frontend)"] <-->|REST API + JWT Auth| Backend["Node + Express (Backend)"]
+    Backend <--> Database[("MongoDB Database")]
 ```
 
 ---
