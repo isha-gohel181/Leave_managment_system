@@ -74,39 +74,6 @@ Crave Leave is a modern, responsive, and feature-rich leave tracking portal buil
 
 ---
 
-## 🏗️ System Architecture
-
-```mermaid
-graph TD
-    subgraph Frontend (React + Vite)
-        Login[Login / Register] --> Dashboard[Dashboard Router]
-        Dashboard --> Employee[Employee Views]
-        Dashboard --> Admin[Admin Views]
-        Layout[Layout Wrapper] --> Sidebar[Sidebar Navigation]
-        Layout --> NotifBell[Notifications Dropdown]
-    end
-
-    subgraph Backend (Express REST API)
-        AuthRoute[Auth Router] --> RegisterCtrl[Register / Login Controller]
-        LeaveRoute[Leave Router] --> LeaveCtrl[Apply / Approve / Reject Controller]
-        DashRoute[Dashboard Router] --> DashCtrl[Metrics Calculator]
-        AuthMW[Auth JWT Middleware] --> AuthRoute
-        AuthMW --> LeaveRoute
-    end
-
-    subgraph Database
-        Mongo[(MongoDB)]
-        UserColl[(User Collection)]
-        LeaveColl[(Leave Collection)]
-        Mongo --> UserColl
-        Mongo --> LeaveColl
-    end
-
-    Employee & Admin --> AuthMW
-    RegisterCtrl & LeaveCtrl & DashCtrl --> Mongo
-```
-
----
 
 ## 🤖 AI Tool Usage Report (Mandatory)
 
