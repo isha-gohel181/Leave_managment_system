@@ -269,6 +269,7 @@ export default function App() {
         setActiveTab={handleSetActiveTab}
         userProfile={user}
         onLogout={handleLogout}
+        leaveRequests={leaveRequests}
       >
         {renderContent()}
       </Layout>

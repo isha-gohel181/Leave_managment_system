@@ -3,32 +3,32 @@
 @theme {
   --color-background: #f9f7f3;
   --color-foreground: #202020;
-  
+
   --color-card: #ffffff;
   --color-card-foreground: #202020;
-  
+
   --color-popover: #ffffff;
   --color-popover-foreground: #202020;
-  
+
   --color-primary: #ea2804;
   --color-primary-foreground: #fcfcfc;
-  
+
   --color-secondary: #f3f0e8;
   --color-secondary-foreground: #202020;
-  
+
   --color-muted: #e6e2d8;
   --color-muted-foreground: #646464;
-  
+
   --color-accent: #f3f0e8;
   --color-accent-foreground: #202020;
-  
+
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  
+
   --color-border: #e6e2d8;
   --color-input: #e6e2d8;
-  --color-ring: rgba(59, 130, 246, 0.5);
-  
+  --color-ring: rgba(255, 90, 31, 0.5);
+
   --color-brand-primary: #ea2804;
   --color-brand-primary-hover: #c01f00;
   --color-brand-glow: #ff6a3d;
@@ -36,7 +36,16 @@
   --color-bg-app: #f9f7f3;
   --color-bg-secondary: #f3f0e8;
   --color-bg-dark: #202020;
-  
+
+  --color-text-primary: #202020;
+  --color-text-body: #444444;
+  --color-text-muted: #646464;
+  --color-text-light: #908d82;
+  --color-text-dark: #fcfcfc;
+
+  --color-bg-surface-dark: #202020;
+  --color-bg-text-primary: #202020;
+
   --color-status-success: #2b9a66;
   --color-status-pending: #f59e0b;
   --color-status-rejected: #ef4444;
@@ -44,7 +53,7 @@
   --font-sans: "Inter", sans-serif;
   --font-display: "Bricolage Grotesque", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-  
+
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
 }
@@ -58,7 +67,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     font-weight: 700;
   }

@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export function ApplyLeave({ 
@@ -148,7 +149,7 @@ export function ApplyLeave({
                 id="leaveType"
                 value={leaveType}
                 onChange={(e) => setLeaveType(e.target.value)}
-                className="w-full bg-bg-app border border-border text-text-primary rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-sans"
+                className="w-full bg-bg-app border border-border text-text-primary rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all font-sans"
               >
                 <option value="">Select a leave type</option>
                 {leaveBalances.map((bal, i) => (
@@ -170,7 +171,7 @@ export function ApplyLeave({
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-full bg-bg-app border border-border text-text-primary px-4 py-2.5 focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full rounded-full bg-bg-app border border-border text-text-primary px-4 py-2.5 focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all"
                 />
               </div>
 
@@ -183,7 +184,7 @@ export function ApplyLeave({
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full rounded-full bg-bg-app border border-border text-text-primary px-4 py-2.5 focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full rounded-full bg-bg-app border border-border text-text-primary px-4 py-2.5 focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all"
                 />
               </div>
             </div>
@@ -231,7 +232,7 @@ export function ApplyLeave({
                 placeholder="Please describe why you are requesting time off..."
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full rounded-xl bg-bg-app border border-border text-text-primary p-4 min-h-[120px] focus:ring-2 focus:ring-blue-500/50"
+                className="w-full rounded-xl bg-bg-app border border-border text-text-primary p-4 min-h-[120px] focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all"
               />
             </div>
 

@@ -2,7 +2,7 @@ export const mockUsers = {
   employee: {
     id: "EMP-2026-089",
     name: "Aidan O'Connor",
-    email: "aidan@replicate.dev",
+    email: "aidan@crave.com",
     role: "employee",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
     department: "Engineering (Product)",
@@ -13,7 +13,7 @@ export const mockUsers = {
   admin: {
     id: "EMP-2024-001",
     name: "Sarah Jenkins",
-    email: "sarah@replicate.dev",
+    email: "sarah@crave.com",
     role: "admin",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
     department: "Engineering Management",
@@ -244,7 +244,7 @@ export const mockAdminStats = {
   rejectedRequests: 18
 };
 
-// Recharts datasets configured with Replicate-styled colors (orange, charcoal, pink, glow, soft green)
+// Recharts datasets configured with Crave-styled colors (orange, charcoal, pink, glow, soft green)
 export const leaveOverviewData = [
   { month: "Jan", applied: 14, approved: 12, rejected: 2 },
   { month: "Feb", applied: 18, approved: 15, rejected: 3 },

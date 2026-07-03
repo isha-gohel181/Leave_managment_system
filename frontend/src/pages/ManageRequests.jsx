@@ -139,7 +139,7 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
       >
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-text-light" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" />
           <Input
             type="text"
             placeholder="Search employee, ID, reason..."
@@ -148,12 +148,12 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="pl-10 pr-8 rounded-full bg-bg-app border border-border focus:ring-2 focus:ring-blue-500/50"
+            className="pl-10 pr-8 rounded-full bg-bg-app border border-border focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-3.5 text-text-light hover:text-text-primary cursor-pointer"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-light hover:text-text-primary cursor-pointer flex items-center justify-center"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -168,7 +168,7 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
               setTypeFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-bg-app border border-border text-text-primary rounded-full px-4 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer"
+            className="bg-bg-app border border-border text-text-primary rounded-full px-4 py-1.5 text-xs font-mono focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all cursor-pointer"
           >
             {leaveTypes.map((type) => (
               <option key={type} value={type}>
@@ -186,7 +186,7 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
                   setStatusFilter(status);
                   setCurrentPage(1);
                 }}
-                className={`px-3 py-1 text-xs font-mono font-medium transition-all uppercase cursor-pointer ${
+                className={`px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all uppercase cursor-pointer ${
                   statusFilter === status
                     ? "bg-card text-text-primary shadow-sm font-semibold"
                     : "text-text-muted hover:text-text-primary"
@@ -372,7 +372,7 @@ export function ManageRequests({ leaveRequests, onUpdateRequest }) {
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 required
-                className="w-full rounded-xl bg-bg-app border border-border text-text-primary p-3 min-h-[100px] text-xs focus:ring-2 focus:ring-blue-500/50"
+                className="w-full rounded-xl bg-bg-app border border-border text-text-primary p-3 min-h-[100px] text-xs focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all"
               />
             </div>
 

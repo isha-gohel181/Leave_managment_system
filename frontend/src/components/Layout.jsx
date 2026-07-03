@@ -18,7 +18,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mockNotifications } from "@/lib/mockData";
 
 export function Layout({ 
   children, 
@@ -26,11 +25,50 @@ export function Layout({
   activeTab, 
   setActiveTab,
   userProfile,
-  onLogout 
+  onLogout,
+  leaveRequests = []
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [readNotificationIds, setReadNotificationIds] = useState([]);
+
+  // Generate dynamic notifications from real backend leave requests
+  const notifications = (() => {
+    if (role === "admin") {
+      // HR Admin notifications for pending queue requests
+      return leaveRequests
+        .filter(req => req.status === "pending")
+        .map(req => ({
+          id: req.id,
+          title: "New Queue Request",
+          message: `${req.employeeName} requested ${req.days} day(s) of ${req.type}.`,
+          time: req.appliedDate || "Today",
+          read: readNotificationIds.includes(req.id),
+          type: "pending"
+        }));
+    } else {
+      // Employee notifications for approvals and status changes
+      return leaveRequests.map(req => {
+        let title = "Request Submitted";
+        let message = `Your ${req.type} request for ${req.startDate} has been sent for review.`;
+        if (req.status === "approved") {
+          title = "Request Approved";
+          message = `Your ${req.type} request for ${req.startDate} was approved by ${req.reviewedBy || 'HR'}.`;
+        } else if (req.status === "rejected") {
+          title = "Request Rejected";
+          message = `Your ${req.type} request for ${req.startDate} was rejected.`;
+        }
+        return {
+          id: req.id,
+          title,
+          message,
+          time: req.appliedDate || "Recently",
+          read: readNotificationIds.includes(req.id),
+          type: req.status
+        };
+      });
+    }
+  })();
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -50,7 +88,7 @@ export function Layout({
   const menuItems = role === "admin" ? adminMenuItems : employeeMenuItems;
 
   const markAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    setReadNotificationIds(notifications.map(n => n.id));
   };
 
   const getNotificationIcon = (type) => {
@@ -74,12 +112,14 @@ export function Layout({
         <div className="space-y-8">
           {/* Logo / Brand Header */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-text-dark font-display font-black text-lg shadow-sm">
-              R
-            </div>
+            <svg viewBox="0 0 100 100" fill="none" className="w-8 h-8 text-brand-primary stroke-current">
+              <circle cx="50" cy="50" r="40" strokeWidth="16" strokeLinecap="round" strokeDasharray="180 300" strokeDashoffset="-20" />
+              <circle cx="50" cy="50" r="22" strokeWidth="8" strokeLinecap="round" strokeDasharray="90 300" strokeDashoffset="-10" opacity="0.8" />
+              <circle cx="78" cy="50" r="7" className="fill-current stroke-none" />
+            </svg>
             <div>
               <span className="font-display font-extrabold text-lg tracking-tight text-text-primary">
-                replicate
+                crave
               </span>
               <span className="font-mono text-[10px] block text-brand-primary font-bold tracking-widest uppercase">
                 leave_sys
@@ -96,15 +136,15 @@ export function Layout({
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-sm font-medium transition-all group cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-sm font-bold transition-all group cursor-pointer ${
                     isActive
-                      ? "bg-text-primary text-text-dark font-semibold shadow-sm"
-                      : "text-text-body hover:bg-border/60 hover:text-text-primary"
+                      ? "bg-brand-primary/10 text-brand-primary"
+                      : "text-text-body font-semibold hover:bg-border/40 hover:text-text-primary"
                   }`}
                 >
                   <Icon 
                     className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                      isActive ? "text-brand-glow" : "text-text-muted"
+                      isActive ? "text-brand-primary" : "text-text-light"
                     }`} 
                   />
                   <span>{item.label}</span>
@@ -115,23 +155,105 @@ export function Layout({
         </div>
 
         {/* User profile section at the bottom of sidebar */}
-        <div className="space-y-4 pt-6 border-t border-border">
-          <div className="flex items-center gap-3">
-            <img
-              src={userProfile.avatar}
-              alt={userProfile.name}
-              className="w-10 h-10 rounded-full object-cover border border-border"
-            />
-            <div className="overflow-hidden">
-              <h4 className="text-xs font-bold font-display text-text-primary truncate">
-                {userProfile.name}
-              </h4>
-              <p className="text-[10px] text-text-muted font-mono uppercase truncate flex items-center gap-1">
-                {role === "admin" && <Shield className="w-2.5 h-2.5 text-brand-primary" />}
-                {role}
-              </p>
+        <div className="space-y-4 pt-6 border-t border-border relative">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <img
+                src={userProfile.avatar}
+                alt={userProfile.name}
+                className="w-10 h-10 rounded-full object-cover border border-border"
+              />
+              <div className="overflow-hidden">
+                <h4 className="text-xs font-bold font-display text-text-primary truncate">
+                  {userProfile.name}
+                </h4>
+                <p className="text-[10px] text-text-muted font-mono uppercase truncate flex items-center gap-1">
+                  {role === "admin" && <Shield className="w-2.5 h-2.5 text-brand-primary" />}
+                  {role}
+                </p>
+              </div>
             </div>
+
+            {/* Desktop Notification Bell */}
+            <button
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className="p-2 rounded-full hover:bg-border/60 text-text-body transition-all relative cursor-pointer"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-brand-primary text-text-dark font-mono text-[8px] font-bold rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
           </div>
+
+          {/* Notifications Dropdown Panel (Desktop Sidebar version) */}
+          <AnimatePresence>
+            {isNotificationsOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-30" 
+                  onClick={() => setIsNotificationsOpen(false)}
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute bottom-16 left-0 w-80 bg-card border border-border rounded-xl shadow-lg z-40 overflow-hidden text-left"
+                >
+                  <div className="p-4 border-b border-border flex items-center justify-between">
+                    <span className="font-display font-extrabold text-sm text-text-primary">
+                      Notifications
+                    </span>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={markAllAsRead}
+                        className="text-[10px] font-mono text-brand-primary font-bold hover:underline cursor-pointer"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-64 overflow-y-auto divide-y divide-border/50">
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-text-muted">
+                        No notifications
+                      </div>
+                    ) : (
+                      notifications.map((notif) => (
+                        <div 
+                          key={notif.id} 
+                          className={`p-3 text-left transition-all ${
+                            !notif.read ? "bg-bg-secondary/40 font-medium" : "opacity-80"
+                          }`}
+                        >
+                          <div className="flex gap-2.5">
+                            <div className="mt-0.5 shrink-0">
+                              {getNotificationIcon(notif.type)}
+                            </div>
+                            <div className="space-y-0.5 min-w-0">
+                              <h4 className="text-xs font-bold text-text-primary truncate">
+                                {notif.title}
+                              </h4>
+                              <p className="text-[11px] text-text-body leading-normal line-clamp-2">
+                                {notif.message}
+                              </p>
+                              <span className="text-[9px] text-text-light font-mono block">
+                                {notif.time}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
           <button
             onClick={onLogout}
             className="w-full flex items-center gap-3 px-4 py-2 rounded-full text-xs font-medium text-text-muted hover:bg-status-rejected/10 hover:text-status-rejected transition-all cursor-pointer"
@@ -145,7 +267,7 @@ export function Layout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 border-b border-border bg-card/50 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
+        <header className="lg:hidden h-16 border-b border-border bg-card/50 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-4">
             {/* Mobile Menu Toggle Button */}
             <button
@@ -289,12 +411,14 @@ export function Layout({
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-text-dark font-display font-black text-lg">
-                      R
-                    </div>
+                    <svg viewBox="0 0 100 100" fill="none" className="w-8 h-8 text-brand-primary stroke-current">
+                      <circle cx="50" cy="50" r="40" strokeWidth="16" strokeLinecap="round" strokeDasharray="180 300" strokeDashoffset="-20" />
+                      <circle cx="50" cy="50" r="22" strokeWidth="8" strokeLinecap="round" strokeDasharray="90 300" strokeDashoffset="-10" opacity="0.8" />
+                      <circle cx="78" cy="50" r="7" className="fill-current stroke-none" />
+                    </svg>
                     <div>
                       <span className="font-display font-extrabold text-base tracking-tight text-text-primary">
-                        replicate
+                        crave
                       </span>
                     </div>
                   </div>
@@ -319,13 +443,13 @@ export function Layout({
                           setActiveTab(item.id);
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium transition-all ${
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-full text-sm font-bold transition-all ${
                           isActive
-                            ? "bg-text-primary text-text-dark shadow-sm"
-                            : "text-text-body hover:bg-border/60"
+                            ? "bg-brand-primary/10 text-brand-primary"
+                            : "text-text-body font-semibold hover:bg-border/40 hover:text-text-primary"
                         }`}
                       >
-                        <Icon className={`w-4 h-4 ${isActive ? "text-brand-glow" : "text-text-muted"}`} />
+                        <Icon className={`w-4 h-4 ${isActive ? "text-brand-primary" : "text-text-light"}`} />
                         <span>{item.label}</span>
                       </button>
                     );

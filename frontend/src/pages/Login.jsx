@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Mail, User, ShieldCheck, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
+import loginArtwork from "@/assets/login_artwork.png";
 
 export function Login({ onLoginSuccess }) {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -29,7 +30,7 @@ export function Login({ onLoginSuccess }) {
         // Register flow
         const response = await api.auth.register(name, email, password, role);
         if (response.success) {
-          toast.success(`Welcome to Replicate Leave System, ${response.data.user.name}!`);
+          toast.success(`Welcome to Crave Leave System, ${response.data.user.name}!`);
           onLoginSuccess(response.data.user, response.data.token);
         }
       } else {
@@ -49,36 +50,41 @@ export function Login({ onLoginSuccess }) {
 
   return (
     <div className="min-h-screen bg-bg-app text-text-primary flex flex-col justify-center items-center p-4 font-sans selection:bg-brand-pink selection:text-brand-primary">
-      {/* Brand Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-text-dark font-display font-black text-xl shadow-md">
-          R
-        </div>
-        <div>
-          <span className="font-display font-extrabold text-2xl tracking-tight text-text-primary">
-            replicate
-          </span>
-          <span className="font-mono text-xs block text-brand-primary font-bold tracking-widest uppercase">
-            leave_sys
-          </span>
-        </div>
-      </div>
-
       {/* Main Container */}
-      <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-xl overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-4xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden relative grid grid-cols-1 md:grid-cols-2">
         {/* Glow Line Indicator */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-brand-glow via-brand-primary to-brand-pink animate-pulse" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-brand-glow via-brand-primary to-brand-pink animate-pulse col-span-1 md:col-span-2" />
 
-        <div className="p-8 md:p-10 space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-black font-display tracking-tight text-text-primary">
-              {isRegistering ? "Create an account" : "Welcome back"}
-            </h1>
-            <p className="text-sm text-text-muted">
-              {isRegistering
-                ? "Enter your details to register as staff"
-                : "Enter your credentials to access your portal"}
-            </p>
+        {/* Left Column: Form Section */}
+        <div className="p-8 md:p-10 space-y-6 flex flex-col justify-center">
+          <div className="space-y-4">
+            {/* Brand Header */}
+            <div className="flex items-center gap-3 justify-center">
+              <svg viewBox="0 0 100 100" fill="none" className="w-8 h-8 text-brand-primary stroke-current">
+                <circle cx="50" cy="50" r="40" strokeWidth="16" strokeLinecap="round" strokeDasharray="180 300" strokeDashoffset="-20" />
+                <circle cx="50" cy="50" r="22" strokeWidth="8" strokeLinecap="round" strokeDasharray="90 300" strokeDashoffset="-10" opacity="0.8" />
+                <circle cx="78" cy="50" r="7" className="fill-current stroke-none" />
+              </svg>
+              <div>
+                <span className="font-display font-extrabold text-xl tracking-tight text-text-primary">
+                  crave
+                </span>
+                <span className="font-mono text-[10px] block text-brand-primary font-bold tracking-widest uppercase">
+                  leave_sys
+                </span>
+              </div>
+            </div>
+
+            <div className="text-center space-y-1">
+              <h1 className="text-2xl font-black font-display tracking-tight text-text-primary">
+                {isRegistering ? "Create an account" : "Welcome back"}
+              </h1>
+              <p className="text-xs text-text-muted">
+                {isRegistering
+                  ? "Enter your details to register as staff"
+                  : "Enter your credentials to access your portal"}
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,7 +124,7 @@ export function Login({ onLoginSuccess }) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@replicate.dev"
+                  placeholder="name@crave.com"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-bg-app/50 text-sm outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all font-sans text-text-primary placeholder:text-text-muted/60"
                   required
                 />
@@ -216,6 +222,30 @@ export function Login({ onLoginSuccess }) {
                 ? "Already have an account? Sign In"
                 : "New staff member? Register here"}
             </button>
+          </div>
+        </div>
+
+        {/* Right Column: Premium Illustration Panel */}
+        <div className="hidden md:flex flex-col justify-center items-center p-12 bg-bg-secondary/40 border-l border-border relative overflow-hidden space-y-6">
+          {/* Subtle Dynamic Ambient Glows */}
+          <div className="absolute -right-20 -bottom-20 w-60 h-60 rounded-full bg-brand-primary/5 blur-3xl" />
+          <div className="absolute -left-20 -top-20 w-60 h-60 rounded-full bg-brand-pink/5 blur-3xl" />
+
+          {/* Abstract Illustration */}
+          <img 
+            src={loginArtwork} 
+            alt="Crave Leave Workspace" 
+            className="max-w-[85%] h-auto rounded-xl object-contain drop-shadow-md select-none pointer-events-none z-10"
+          />
+
+          {/* Slogan & Quote */}
+          <div className="text-center space-y-2 max-w-xs z-10">
+            <h3 className="font-display font-extrabold text-sm text-text-primary uppercase tracking-wider">
+              Streamline Your Time Off
+            </h3>
+            <p className="text-xs text-text-muted leading-relaxed font-sans">
+              Apply for leave, manage requests, and track calendar coverage in one premium corporate portal.
+            </p>
           </div>
         </div>
       </div>

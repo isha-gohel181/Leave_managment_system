@@ -99,7 +99,7 @@ export function LeaveHistory({ leaveRequests, userProfile }) {
       >
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-text-light" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" />
           <Input
             type="text"
             placeholder="Search by category, description, request ID..."
@@ -108,12 +108,12 @@ export function LeaveHistory({ leaveRequests, userProfile }) {
               setSearchTerm(e.target.value);
               setCurrentPage(1); // reset to first page
             }}
-            className="pl-10 pr-8 rounded-full bg-bg-app border border-border focus:ring-2 focus:ring-blue-500/50"
+            className="pl-10 pr-8 rounded-full bg-bg-app border border-border focus:outline-none focus:border-brand-primary focus:ring-3 focus:ring-brand-primary/10 transition-all"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-3.5 text-text-light hover:text-text-primary cursor-pointer"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-light hover:text-text-primary cursor-pointer flex items-center justify-center"
             >
               <X className="w-3.5 h-3.5" />
             </button>

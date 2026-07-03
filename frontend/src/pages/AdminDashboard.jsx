@@ -43,10 +43,12 @@ export function AdminDashboard({ leaveRequests, setActiveTab }) {
       typeCounts[req.type] += req.days;
     }
   });
+
+  const totalDays = Object.values(typeCounts).reduce((sum, val) => sum + val, 0) || 1;
   const leaveTypeDistribution = [
-    { name: "Annual Leave", value: typeCounts['Annual Leave'] || 0, color: "#ea2804" },
-    { name: "Sick Leave", value: typeCounts['Sick Leave'] || 0, color: "#2b9a66" },
-    { name: "Casual Leave", value: typeCounts['Casual Leave'] || 0, color: "#f59e0b" }
+    { name: "Annual Leave", value: Math.round(((typeCounts['Annual Leave'] || 0) / totalDays) * 100), color: "#ea2804" },
+    { name: "Sick Leave", value: Math.round(((typeCounts['Sick Leave'] || 0) / totalDays) * 100), color: "#2b9a66" },
+    { name: "Casual Leave", value: Math.round(((typeCounts['Casual Leave'] || 0) / totalDays) * 100), color: "#f59e0b" }
   ];
 
   // Dynamic Monthly Leave overview for Bar Chart
@@ -82,7 +84,7 @@ export function AdminDashboard({ leaveRequests, setActiveTab }) {
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120 } }
   };
 
-  // Custom tooltips matching Replicate's dark code block style
+  // Custom tooltips matching Crave's dark code block style
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -311,8 +313,12 @@ export function AdminDashboard({ leaveRequests, setActiveTab }) {
             </ResponsiveContainer>
             {/* Center label */}
             <div className="absolute text-center">
-              <span className="text-2xl font-black font-display text-text-primary">65%</span>
-              <span className="text-[9px] text-text-light font-mono block uppercase">annual leave</span>
+              <span className="text-2xl font-black font-display text-text-primary">
+                {leaveTypeDistribution[0].value}%
+              </span>
+              <span className="text-[9px] text-text-light font-mono block uppercase">
+                {leaveTypeDistribution[0].name}
+              </span>
             </div>
           </div>
 
